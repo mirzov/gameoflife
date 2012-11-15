@@ -1,0 +1,41 @@
+@(reqHeader: play.api.mvc.RequestHeader)
+
+@main("Sockets test") {
+
+	<script>
+		$(function(){
+			var connection = new WebSocket("@routes.MySocket.sockets.webSocketURL()(reqHeader)");
+			connection.onopen = function(){
+   			console.log('Connection open!');
+			}
+			connection.onclose = function(){
+   			console.log('Connection closed');
+			}
+			connection.onerror = function(error){
+   			console.log('Error detected: ' + error);
+			}
+			connection.onmessage = function(e){
+   			var server_message = e.data;
+   			console.log(server_message);
+			}
+			
+			$("#send").on("click", function(){
+				var message = $('#message').val();
+				console.log('sending ' + message);
+				connection.send(message);
+			});
+			
+			$("#close").on("click", function(){
+				console.log('Closing connection');
+				connection.close();
+			});
+		})
+	</script>   
+	
+	<p>
+		<input type="text" id="message"/>
+		<button id="send">Send!</button>
+		<button id="close">Close connection!</button>
+	</p> 
+    
+}
