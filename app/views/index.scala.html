@@ -16,12 +16,13 @@
 			}
 			connection.onmessage = function(e){
    			var server_message = e.data;
-   			console.log(server_message);
+   			//console.log(server_message);
+   			$("#field").val(server_message);
 			}
 			
 			$("#send").on("click", function(){
 				var message = $('#message').val();
-				console.log('sending ' + message);
+				//console.log('sending ' + message);
 				connection.send(message);
 			});
 			
@@ -36,6 +37,7 @@
 		<input type="text" id="message"/>
 		<button id="send">Send!</button>
 		<button id="close">Close connection!</button>
-	</p> 
+	</p>
+	<p><textarea id="field" rows="30" cols="80"></textarea></p>
     
 }
