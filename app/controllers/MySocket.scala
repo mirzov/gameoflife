@@ -5,27 +5,17 @@ import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import scala.concurrent.Future
 import models.LifeField
+import models.Simulation
 
 object MySocket extends Controller {
   
 	def sockets = WebSocket.using[String]{ req =>
 	  	val (out,channel) = Concurrent.broadcast[String]
-	  	val life = new LifeField(10)
-	  	life.flip(Seq((4,4),(4,5),(4,6)))
-	  	val in = Iteratee.foreach[String]{
-	  		s => {
-	  			channel.push(life.print)
-	  			life.tick()
-	  		}
+	  	val simulation = new Simulation(10, channel)
+	  	val in = Iteratee.foreach[String]{s =>
+	  	  	simulation.pause = try{s.toInt} catch{case _ => 500}
 	  	}
 	  	(in, out)
 	}
 	
 }
-//	
-//	def enum = new Enumerator[String]{
-//		override def apply[A](i: Iteratee[String, A]): Future[Iteratee[String, A]] = {
-//			
-//		}
-//	}
-//}
