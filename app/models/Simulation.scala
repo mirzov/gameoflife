@@ -12,7 +12,7 @@ class Simulation(size: Int, channel: Channel[String]) {
 	life.flip(Seq((4,4),(4,5),(4,6)))
 	
 	val runner = actor{
-		loop{
+		for(i <- 1 to 10){
 			receiveWithin(pause){
 				case "exit" => exit()
 				case TIMEOUT =>

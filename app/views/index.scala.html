@@ -1,43 +1,30 @@
 @(reqHeader: play.api.mvc.RequestHeader)
 
-@main("Sockets test") {
+@main("Game of Life") {
 
 	<script>
 		$(function(){
-			var connection = new WebSocket("@routes.MySocket.sockets.webSocketURL()(reqHeader)");
-			connection.onopen = function(){
-   			console.log('Connection open!');
-			}
-			connection.onclose = function(){
-   			console.log('Connection closed');
-			}
-			connection.onerror = function(error){
-   			console.log('Error detected: ' + error);
-			}
-			connection.onmessage = function(e){
-   			var server_message = e.data;
-   			//console.log(server_message);
-   			$("#field").val(server_message);
-			}
-			
-			$("#send").on("click", function(){
-				var message = $('#message').val();
-				//console.log('sending ' + message);
-				connection.send(message);
-			});
-			
-			$("#close").on("click", function(){
-				console.log('Closing connection');
-				connection.close();
+			runTheApp({
+				pathToWebSocket: "@routes.MySocket.sockets.webSocketURL()(reqHeader)"	
 			});
 		})
-	</script>   
-	
-	<p>
+	</script>
+	   
+	<div>
 		<input type="text" id="message"/>
 		<button id="send">Send!</button>
 		<button id="close">Close connection!</button>
-	</p>
-	<p><textarea id="field" rows="30" cols="80"></textarea></p>
+	</div>
+	<div><textarea id="field" rows="15" cols="40"></textarea></div>
+	
+	<div id="lifefield" data-bind="foreach: lifeFieldRows">
+	
+		<div class="lifefieldrow" data-bind="foreach: $data">
+		
+			<span data-bind="attr:{class: cellclass}, event:{click: cellclick}"></span>
+			
+		</div>
+		
+	</div>
     
 }
