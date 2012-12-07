@@ -1,24 +1,30 @@
 function runTheApp(options){
-	setupWebsockets(options.pathToWebSocket);
-	var mainVm = makeMainVm(10);
+	var conn = setupWebsockets(options.pathToWebSocket);
+	var field = makeLifeFieldVm(options.fieldSize);
+	var mainVm = makeMainVm(conn, field);
 	ko.applyBindings(mainVm);
+}
+
+function makeMainVm(connection, lifeFieldVm){
+	var self = {};
+	self.lifeFieldVm = lifeFieldVm;
+	return self;
 }
 
 function setupWebsockets(pathToWebSocket){
 	var connection = new WebSocket(pathToWebSocket);
 	connection.onopen = function(){
-	console.log('Connection open!');
+		console.log('Connection open!');
 	}
 	connection.onclose = function(){
-	console.log('Connection closed');
+		console.log('Connection closed');
 	}
 	connection.onerror = function(error){
-	console.log('Error detected: ' + error);
+		console.log('Error detected: ' + error);
 	}
 	connection.onmessage = function(e){
-	var server_message = e.data;
-	//console.log(server_message);
-	$("#field").val(server_message);
+		var server_message = e.data;
+		$("#field").val(server_message);
 	}
 	
 	$("#send").on("click", function(){
@@ -31,10 +37,12 @@ function setupWebsockets(pathToWebSocket){
 		console.log('Closing connection');
 		connection.close();
 	});
+	return connection;
 }
 
-function makeMainVm(size){
+function makeLifeFieldVm(size){
 	var self = {};
+	
 	self.lifeFieldRows = [];
 	for(var rowi = 0; rowi < size; rowi++){
 		var row = [];
@@ -43,6 +51,34 @@ function makeMainVm(size){
 		}
 		self.lifeFieldRows.push(row);
 	}
+	
+	self.listLiveCells = function(){
+		var res = [];
+		for(var i = 0; i < size; i++){
+			for(var j = 0; j < size; j++){
+				if(lifeFieldRows[i][j].live()){
+					res.push([i,j]);
+				}
+			}
+		}
+		return res;
+	};
+	
+	self.killAll = function(){
+		for(var i = 0; i < size; i++){
+			for(var j = 0; j < size; j++){
+				lifeFieldRows[i][j].live(false);
+			}
+		}
+	};
+	
+	self.init = function(liveCellsList){
+		self.killAll();
+		liveCellsList.forEach(function(cell){
+			lifeFieldRows[cell[0]][cell[1]].live(true);
+		});
+	};
+	
 	return self;
 };
 
