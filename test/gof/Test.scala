@@ -43,4 +43,31 @@ class LifeTest extends FunSuite{
 	  assert(dead.tick(3).isInstanceOf[Live])
   }
   
+  test("two adjacent live cells have 10 dead neighbours"){
+	  val gen = new Generation(Seq(Live(0,0), Live(0,1)))
+	  assert( gen.cellsWithNeighbours.count(_.isInstanceOf[Dead]) === 10)
+  }
+  
+  test("2 by 2 block is a still life"){
+	  val gen = new Generation(Seq(Live(0,0), Live(0,1), Live(1,0), Live(1,1)))
+	  assert( gen.tick.cells.toSet === gen.cells.toSet)
+  }
+  
+  test("3 by 1 oscillator ticks as expected"){
+	  val gen = new Generation(Seq(Live(1,0), Live(1,1), Live(1,2)))
+	  val expected = Set(Live(0,1), Live(1,1), Live(2,1))
+	  assert( gen.tick.cells.toSet === expected)
+  }
+  
+  test("3 by 1 oscillator restores after 2 ticks"){
+	  val gen = new Generation(Seq(Live(1,0), Live(1,1), Live(1,2)))
+	  assert( gen.tick.tick.cells.toSet === gen.cells.toSet)
+  }
+  
 }
+
+
+
+
+
+

@@ -4,16 +4,15 @@ import play.api.libs.iteratee._
 import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import scala.concurrent.Future
-import models.LifeField
 import models.Simulation
+import play.api.libs.json.JsValue
 
 object MySocket extends Controller {
   
-	def sockets = WebSocket.using[String]{ req =>
-	  	val (out,channel) = Concurrent.broadcast[String]
-	  	val simulation = new Simulation(10, channel)
-	  	val in = Iteratee.foreach[String]{s =>
-	  	  	simulation.pause = try{s.toInt} catch{case _ => 500}
+	def sockets = WebSocket.using[JsValue]{ req =>
+	  	val (out,channel) = Concurrent.broadcast[JsValue]
+	  	val simulation = new Simulation(channel)
+	  	val in = Iteratee.foreach[JsValue]{s =>
 	  	}
 	  	(in, out)
 	}

@@ -3,21 +3,31 @@ package models
 import scala.actors.Actor._
 import play.api.libs.iteratee.Concurrent.Channel
 import scala.actors.TIMEOUT
+import gof._
+import play.api.libs.json._
 
-class Simulation(size: Int, channel: Channel[String]) {
+class Simulation(channel: Channel[JsValue]) {
 
-	var pause = 500
+	val pause = 500
 	
-	private val life = new LifeField(size)
-	//life.flip(Seq(Cell(4,4, life), Cell(4,5, life), Cell(4,6, life)))
+	private var life = new Generation(Seq(Live(5,4), Live(5,5), Live(5,6)))
+	
+	private def toJsValue: JsValue = Json.obj(
+	    "life" -> life.cells.map{cell => 
+        	Json.obj(
+        	    "x" -> cell.x,
+        	    "y" -> cell.y
+        	)
+        }
+	)
 	
 	val runner = actor{
-		for(i <- 1 to 10){
+		for(i <- 1 to 100){
 			receiveWithin(pause){
 				case "exit" => exit()
 				case TIMEOUT =>
-					//life.tick()
-					//channel.push(life.print)
+					life = life.tick
+					channel.push(toJsValue)
 			}
 		}
 	}

@@ -18,14 +18,15 @@
 	</div>
 	<div><textarea id="field" rows="15" cols="40"></textarea></div>
 	
-	<div id="lifefield" data-bind="foreach: lifeFieldVm">
-	
-		<div class="lifefieldrow" data-bind="foreach: lifeFieldRows">
-		
-			<span data-bind="attr:{class: cellclass}, event:{click: cellclick}"></span>
+	<div id="lifefield" data-bind="with: lifeFieldVm">
+
+		<div data-bind="foreach: lifeFieldRows">
+			<div class="lifefieldrow" data-bind="foreach: $data">
 			
+				<span data-bind="attr:{class: cellclass}, event:{click: cellclick}"></span>
+				
+			</div>
 		</div>
-		
 	</div>
     
 }

@@ -1,6 +1,6 @@
 function runTheApp(options){
-	var conn = setupWebsockets(options.pathToWebSocket);
 	var field = makeLifeFieldVm(options.fieldSize);
+	var conn = setupWebsockets(options.pathToWebSocket, field);
 	var mainVm = makeMainVm(conn, field);
 	ko.applyBindings(mainVm);
 }
@@ -11,7 +11,7 @@ function makeMainVm(connection, lifeFieldVm){
 	return self;
 }
 
-function setupWebsockets(pathToWebSocket){
+function setupWebsockets(pathToWebSocket, fieldVm){
 	var connection = new WebSocket(pathToWebSocket);
 	connection.onopen = function(){
 		console.log('Connection open!');
@@ -23,8 +23,9 @@ function setupWebsockets(pathToWebSocket){
 		console.log('Error detected: ' + error);
 	}
 	connection.onmessage = function(e){
-		var server_message = e.data;
-		$("#field").val(server_message);
+		if(e.data){
+			fieldVm.init(JSON.parse(e.data).life);
+		}
 	}
 	
 	$("#send").on("click", function(){
@@ -56,7 +57,7 @@ function makeLifeFieldVm(size){
 		var res = [];
 		for(var i = 0; i < size; i++){
 			for(var j = 0; j < size; j++){
-				if(lifeFieldRows[i][j].live()){
+				if(self.lifeFieldRows[i][j].live()){
 					res.push([i,j]);
 				}
 			}
@@ -67,15 +68,21 @@ function makeLifeFieldVm(size){
 	self.killAll = function(){
 		for(var i = 0; i < size; i++){
 			for(var j = 0; j < size; j++){
-				lifeFieldRows[i][j].live(false);
+				self.lifeFieldRows[i][j].live(false);
 			}
 		}
 	};
 	
 	self.init = function(liveCellsList){
 		self.killAll();
+		if(!liveCellsList) return;
 		liveCellsList.forEach(function(cell){
-			lifeFieldRows[cell[0]][cell[1]].live(true);
+			var x = cell.x;
+			var y = cell.y;
+			//console.log('initing ' + JSON.stringify(cell));
+			if(x >= 0 && y >= 0 && x < size && y < size){
+				self.lifeFieldRows[x][y].live(true);
+			}
 		});
 	};
 	
