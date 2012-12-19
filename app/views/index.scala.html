@@ -6,17 +6,15 @@
 		$(function(){
 			runTheApp({
 				pathToWebSocket: "@routes.MySocket.sockets.webSocketURL()(reqHeader)",
-				fieldSize: 10
+				fieldSize: 40
 			});
 		})
 	</script>
 	   
 	<div>
-		<input type="text" id="message"/>
-		<button id="send">Send!</button>
-		<button id="close">Close connection!</button>
+		<button id="start">Start!</button>
+		<button id="stop">Stop!</button>
 	</div>
-	<div><textarea id="field" rows="15" cols="40"></textarea></div>
 	
 	<div id="lifefield" data-bind="with: lifeFieldVm">
 

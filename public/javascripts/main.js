@@ -28,15 +28,18 @@ function setupWebsockets(pathToWebSocket, fieldVm){
 		}
 	}
 	
-	$("#send").on("click", function(){
-		var message = $('#message').val();
+	$("#start").on("click", function(){
+		var message = JSON.stringify({
+			startGen: fieldVm.listLiveCells(),
+			steps: 1000,
+			pause: 500
+		});
 		//console.log('sending ' + message);
 		connection.send(message);
 	});
 	
-	$("#close").on("click", function(){
-		console.log('Closing connection');
-		connection.close();
+	$("#stop").on("click", function(){
+		connection.send(JSON.stringify({command: 'exit'}));
 	});
 	return connection;
 }
@@ -58,7 +61,7 @@ function makeLifeFieldVm(size){
 		for(var i = 0; i < size; i++){
 			for(var j = 0; j < size; j++){
 				if(self.lifeFieldRows[i][j].live()){
-					res.push([i,j]);
+					res.push({x: i, y: j});
 				}
 			}
 		}

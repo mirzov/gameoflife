@@ -1,3 +1,7 @@
+button{
+	margin-bottom: 10px;
+}
+
 .deadcell, .livecell{
 	width: 12px;
 	height: 12px;
